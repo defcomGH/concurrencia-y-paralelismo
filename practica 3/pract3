@@ -1,0 +1,92 @@
+
+EJERCICIO 4
+=========================================================================================================================
+
+
+Monitor monitor {
+	cond vcAlumno;
+	cond vcAlumnos[25];
+	cond vcProfesor;
+	int alumnos=0;
+	int grupo;
+	int[50] entregados = [50,0];
+	int[25] notasEvaluacion;
+
+
+	Procedure llegada(out nroGrupo){
+		alumnos++;
+		if(alumnos ==50){
+			signal(vcProfesor);
+		}
+
+		wait(alumno);
+
+		nroGrupo=grupo;
+
+		signal(vcProfesor);		
+
+	}
+
+	Procedure avisarAlJefe(in int nroGrupo,out int nota){
+
+		entregados[nroGrupo]++;
+	
+		if(entregados[nroGrupo]==2){
+			ColaEntregados.Push(nroGrupo);
+		}
+		wait(vcAlumnos[nroGrupo]);
+		nota = notaEvaluacion[nroGrupo];
+
+	}
+
+	Procedure correjir(ref correjidos){
+	int grupoActual;
+		if(ColaEntregados.isNotEmpty()){
+			grupoActual = colaCorrejidos.pop();
+			correjidos++;
+			notaEvaluacionGrupo[grupoActual]= //poner nota;
+			signalAll(vcAlumnos25);
+		}	
+	}
+
+
+
+	Procedure esperar50(){
+
+		if(alumnos <50){
+			wait(vcProfesor);
+		}
+		
+	}
+
+
+
+
+	Procedure darGrupo(in int nroGrupo){
+		grupo = nroGrupo;
+		signal(vcAlumno);
+		wait(vcProfesor);
+	}
+}
+
+
+
+
+
+
+Process Alumno [id: 0..N-1] {
+	int nroGrupo;
+	monitor.llegada(nroGrupo);
+	//resolverPráctica
+}
+
+Procces Profesor {
+int correjidos=0;
+	monitor.Esperar50();
+	for(int i=0;i<50;i++){
+		monitor.darGrupo(DarNumero());
+	}
+	while(correjidos < 25){
+		correjir(ref correjidos);
+	}
+} 
